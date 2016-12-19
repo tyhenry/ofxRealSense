@@ -16,13 +16,13 @@ bool ofxRSScan::enable(PXCSenseManager* senseManagerPtr)
 	// error: can not re-enable without closing first
 	if (scanMode >= RSSCAN_ENABLED)
 	{
-		ofLogError("RealSense::Scan") << "couldn't enable 3D scanning module, already enabled!";
+		ofLogError("ofxRSScan") << "couldn't enable 3D scanning module, already enabled!";
 		return false;
 	}
 	// error: no sense manager
 	if (senseManagerPtr == NULL)
 	{
-		ofLogError("RealSense::Scan") << "couldn't enable 3D scanning module, invalid Real Sense SDK manager";
+		ofLogError("ofxRSScan") << "couldn't enable 3D scanning module, invalid Real Sense SDK manager";
 		return false;
 	}
 
@@ -32,7 +32,7 @@ bool ofxRSScan::enable(PXCSenseManager* senseManagerPtr)
 	// RS SDK error?
 	if (status < PXC_STATUS_NO_ERROR)
 	{
-		ofLogError("RealSense::Scan") << "couldn't enable 3D scanning module, error status: " << status;
+		ofLogError("ofxRSScan") << "couldn't enable 3D scanning module, error status: " << status;
 		return false;
 	}
 
@@ -47,13 +47,13 @@ bool ofxRSScan::configure( /* to do: options */ )
 	if (scanMode < RSSCAN_ENABLED || scanMode > RSSCAN_READY)
 	{
 		string msg = (scanMode < RSSCAN_ENABLED) ? "module not yet enabled" : "already scanning";
-		ofLogError("RealSense::Scan") << "can't configure 3D scanning, " + msg;
+		ofLogError("ofxRSScan") << "can't configure 3D scanning, " + msg;
 		return false;
 	}
 	// error: no RS SDK manager (should be avoided by scanMode check, but test anyway)
 	if (senseMgr == NULL)
 	{
-		ofLogError("RealSense::Scan") << "can't configure 3D scanning, invalid Real Sense SDK manager";
+		ofLogError("ofxRSScan") << "can't configure 3D scanning, invalid Real Sense SDK manager";
 		return false;
 	}
 
@@ -77,7 +77,7 @@ bool ofxRSScan::configure( /* to do: options */ )
 	// RS SDK error?
 	if (status < PXC_STATUS_NO_ERROR)
 	{
-		ofLogError("RealSense::Scan") << "unable to set scan configuration, error status: " << status;
+		ofLogError("ofxRSScan") << "unable to set scan configuration, error status: " << status;
 		return false;
 	}
 
@@ -96,7 +96,7 @@ bool ofxRSScan::start() {
 	if (scanMode != RSSCAN_READY)
 	{
 		string msg = (scanMode < RSSCAN_READY) ? "module not yet ready" : "already scanning";
-		ofLogError("RealSense::Scan") << "can't start 3D scanning, " + msg;
+		ofLogError("ofxRSScan") << "can't start 3D scanning, " + msg;
 		return false;
 	}
 
@@ -108,7 +108,7 @@ bool ofxRSScan::start() {
 	// RS SDK error?
 	if (status < PXC_STATUS_NO_ERROR)
 	{
-		ofLogError("RealSense::Scan") << "unable to start scan, error status: " << status;
+		ofLogError("ofxRSScan") << "unable to start scan, error status: " << status;
 		return false;
 	}
 
@@ -123,7 +123,7 @@ bool ofxRSScan::updatePreview(bool bMakeTexture) {
 
 	if (scanMode < RSSCAN_READY)
 	{
-		ofLogError("RealSense::Scan") << "can't update scan preview, not ready!";
+		ofLogError("ofxRSScan") << "can't update scan preview, not ready!";
 		return false;
 	}
 
@@ -132,7 +132,7 @@ bool ofxRSScan::updatePreview(bool bMakeTexture) {
 	PXCImage* img = scanner->AcquirePreviewImage();
 	if (!img)
 	{
-		ofLogError("RealSense::Scan") << "scan preview image null!";
+		ofLogError("ofxRSScan") << "scan preview image null!";
 		return false;
 	}
 
@@ -142,7 +142,7 @@ bool ofxRSScan::updatePreview(bool bMakeTexture) {
 	pxcStatus status = img->AcquireAccess(PXCImage::ACCESS_READ, PXCImage::PIXEL_FORMAT_RGB24, &imgData);
 	if (status < PXC_STATUS_NO_ERROR)
 	{
-		ofLogError("RealSense::Scan") << "error reading scanner preview image, error status: " << status;
+		ofLogError("ofxRSScan") << "error reading scanner preview image, error status: " << status;
 		img->ReleaseAccess(&imgData);
 		img->Release();
 		return false;
@@ -164,7 +164,7 @@ bool ofxRSScan::updatePreview(bool bMakeTexture) {
 	status = img->ReleaseAccess(&imgData);
 	if (status < PXC_STATUS_NO_ERROR)
 	{
-		ofLogError("RealSense::Scan") << "error releasing access to scan preview image, error status: " << status;
+		ofLogError("ofxRSScan") << "error releasing access to scan preview image, error status: " << status;
 		img->Release();
 		return false;
 	}
@@ -178,7 +178,7 @@ bool ofxRSScan::stop()
 {
 	if (scanMode != RSSCAN_STARTED)
 	{
-		ofLogError("RealSense::Scan") << "can't stop scan, scan not started";
+		ofLogError("ofxRSScan") << "can't stop scan, scan not started";
 		return false;
 	}
 
@@ -188,7 +188,7 @@ bool ofxRSScan::stop()
 
 	if (status < PXC_STATUS_NO_ERROR) 
 	{
-		ofLogError("RealSense::Scan") << "can't stop scan, error status: " << status;
+		ofLogError("ofxRSScan") << "can't stop scan, error status: " << status;
 		return false;
 	}
 
@@ -201,7 +201,7 @@ bool ofxRSScan::save(string path)
 {
 	if (scanMode < RSSCAN_READY)
 	{
-		ofLogError("RealSense::Scan") << "can't save scan, scanner not ready";
+		ofLogError("ofxRSScan") << "can't save scan, scanner not ready";
 		return false;
 	}
 
@@ -213,7 +213,7 @@ bool ofxRSScan::save(string path)
 	pxcStatus status = scanner->Reconstruct(PXC3DScan::FileFormat::OBJ, ws);
 	if (status < PXC_STATUS_NO_ERROR)
 	{
-		ofLogError("RealSense::Scan") << "couldn't save scan, error status: " << status;
+		ofLogError("ofxRSScan") << "couldn't save scan, error status: " << status;
 		return false;
 	}
 	return true;

@@ -22,7 +22,7 @@ void PXCAPI ofxRSScanAlertHandler::OnAlert(const PXC3DScan::AlertData& data)
 	int labelIndex = data.label;
 	if (labelIndex >= 0 && labelIndex <= 23/*ARRAYSIZE(alertMap)*/)
 	{
-		ofLogNotice("ofxRSScanner Alert") << alertMap[labelIndex];
+		ofLogNotice("ofxRSScan Alert") << alertMap[labelIndex];
 	}
 	switch (data.label)
 	{

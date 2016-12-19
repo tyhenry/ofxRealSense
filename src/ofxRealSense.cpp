@@ -218,7 +218,7 @@ bool ofxRealSense::updateColor(PXCCapture::Sample *sample)
 	pxcStatus status = sample->color->AcquireAccess(PXCImage::ACCESS_READ, PXCImage::PIXEL_FORMAT_RGB24, &colorData);
 	if (status < PXC_STATUS_NO_ERROR)
 	{
-		ofLogError("ofxRealSense") << "can't access color image data, error status: " << status;
+		ofLogError("ofxRealSens") << "can't access color image data, error status: " << status;
 		sample->color->ReleaseAccess(&colorData);
 		return false;
 	}
