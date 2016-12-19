@@ -1,23 +1,28 @@
 #ofxRealSense
 
-##WORK IN PROGRESS! Your mileage may vary. This addon is in active development.
+__WORK IN PROGRESS!__  
+Your mileage may vary. This addon is in active development.
 
 ##Description
 
-ofxRealSense is an openFrameworks addon for the Intel RealSense SR300 depth camera.  Windows only.  
-Tested with Windows 10, openFrameworks 0.9.8, Visual Studio Community 2015  
+ofxRealSense is an openFrameworks addon to interface with the Intel RealSense SR300 depth camera.  
+It supports HD RGB and depth streams, and 3D face scanning. Soon, it should support 3D face & body tracking.  
+__Windows only.__   Tested with Windows 10, openFrameworks 0.9.8, Visual Studio Community 2015.
 
-*Requires Intel RealSense SDK 2016 R2 (a.k.a v10.0)*
+__Requires Intel RealSense SDK 2016 *R2* (v10.0)__
 
 ###Installation:
 
-[Download and install Intel RealSense SDK 2016 *R2* here](http://registrationcenter-download.intel.com/akdlm/irc_nas/vcp/9078/intel_rs_sdk_offline_package_10.0.26.0396.exe)  
-_Note: This is a direct download of an 1.8GB exe installation file._  
-(Also: Intel RealSense SDK R3 was released early Dec. 2016, which removed face tracking, person tracking, and other modules from the SDK.  *This addon requires R2!!!*  [More info at Intel RealSense SDK page](https://software.intel.com/en-us/intel-realsense-sdk))
+[Download and install Intel RealSense SDK 2016 __R2__ here](http://registrationcenter-download.intel.com/akdlm/irc_nas/vcp/9078/intel_rs_sdk_offline_package_10.0.26.0396.exe)  
+_This is a direct download of a 1.8GB exe installation file._
+
+(Note: Intel RealSense SDK 2016 __R3__ (v11.0) was released Dec. 2016, which removed face tracking, person tracking, and other modules from the SDK.  
+__As such, this addon requires R2!__  [More info at Intel RealSense SDK page](https://software.intel.com/en-us/intel-realsense-sdk))
 
 __To create new project:__
 
-* use project generator, include ofxRealSense addon, open project in VS2015
+* after installing Intel RealSense SDK 2016 R2, clone this github repo into your ofx/addons directory
+* use oF project generator, include ofxRealSense addon, open project in VS2015
 * right click on project in Solution Explorer, select Properties
 * change "Configuration" to "All Configurations" and "Platform" to "All Platforms"
 * under "C\C++" > "General" > "Additional Include Directories", add:  
@@ -48,7 +53,7 @@ __To Do:__
 * face expression module
 * person (skeleton) tracking module
 
-#Stay Tuned!
+###Stay Tuned!
 
 Pull requests welcome.
 
