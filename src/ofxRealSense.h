@@ -15,7 +15,7 @@
 
 class ofxRealSense 
 {
-friend class RSScan;
+friend class ofxRSScan;
 
 public:
 
@@ -45,7 +45,7 @@ public:
 	const ofPixels& getColorPixelsRef() { return mColorPix; }
 	const ofPixels& getDepthPixelsRef() { return mDepthPix; }
 	const ofShortPixels& getDepthRawPixelsRef() { return mDepthRawPix; }
-	const ofPixels& getScanPreviewPixelsRef() { return mScanPreviewPix; }
+	const ofPixels& getScanPreviewPixelsRef() { return mScanner.getPreviewPixRef(); }
 
 private:
 
