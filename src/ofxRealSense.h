@@ -41,6 +41,8 @@ public:
 	bool startScan() { return mScanner.start(); }
 	bool stopScan() { return mScanner.stop(); }
 	bool saveScan(string filename) { return mScanner.save(ofToDataPath(filename, true)); }
+	bool isFaceScanReady() { return mScanner.isFaceScanReady(); }
+	bool isScanning() { return mScanner.isScanning(); }
 
 	const ofPixels& getColorPixelsRef() { return mColorPix; }
 	const ofPixels& getDepthPixelsRef() { return mDepthPix; }

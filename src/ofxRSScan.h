@@ -23,8 +23,11 @@ public:
 	bool start();
 	bool updatePreview(bool bMakeTexture = true);
 	bool stop();
-	bool save(string path);	// to do: save to custom path (for now, save to bin/data)
+	bool save(string path);
 	void close();
+
+	bool isFaceScanReady();
+	bool isScanning();
 
 	ofPixels& getPreviewPixRef() { return previewPix; }
 	ofTexture& getPreviewTexRef() { return previewTex; }

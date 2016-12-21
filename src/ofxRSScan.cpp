@@ -240,3 +240,21 @@ void ofxRSScan::close()
 	// reset scan mode
 	scanMode = RSSCAN_NULL;
 }
+
+//--------------------------------------------------------------
+bool ofxRSScan::isFaceScanReady()
+{
+
+	if (scanMode != RSSCAN_READY)
+	{
+		return false;
+	}
+
+	return (alertHandler.getStatusIsReady());
+}
+
+//--------------------------------------------------------------
+bool ofxRSScan::isScanning()
+{
+	return (scanMode == RSSCAN_STARTED && scanner && scanner->IsScanning());
+}
