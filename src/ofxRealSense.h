@@ -21,10 +21,11 @@ public:
 
 	ofxRealSense();
 
-	bool setup(bool grabColor = true, bool useTextures = true, bool trackFaces = true, bool doScan = true);		// initializes camera and modules (face tracking and face scanning)
+	// initialize camera and modules (face tracking and face scanning)
+	bool setup(bool grabColor = true, bool useTextures = true, bool trackFaces = true, bool doScan = true);
 
 	bool open();		// start streaming data
-	bool update();		// updates data, called each frame
+	bool update();		// update data, call each frame
 	bool close();		// close data stream
 
 	// draw functions
@@ -49,20 +50,29 @@ public:
 	const ofShortPixels& getDepthRawPixelsRef() { return mDepthRawPix; }
 	const ofPixels& getScanPreviewPixelsRef() { return mScanner.getPreviewPixRef(); }
 
+	const ofPixels& getColorPixelsInDepthFrame() { return mColorInDepthFrame; }
+	const ofPixels& getDepthPixelsInColorFrame() { return mDepthInColorFrame; }
+
 private:
 
 	bool updateDepth(PXCCapture::Sample* sample);
 	bool updateColor(PXCCapture::Sample* sample);
+	bool mapDepthAndColor(PXCCapture::Sample* sample);
 
 	bool	bColor = true,
 			bUseTex = true,
 			bFaces = true,
 			bScan = true,
+			bUVMap = true, // map color <--> depth
 			bIsOpen = false,
 			bBGR = true;
 
-	ofPixels mColorPix, mDepthPix;	// rgb cam, and depth->8bit grayscale
-	ofShortPixels mDepthRawPix;		// raw depth values in mm (16bit int)
+	ofPixels	mColorPix,				// rgb cam
+				mDepthPix,				// depth -> 8bit grayscale
+				mColorInDepthFrame,		// UV mapped color into depth frame
+				mDepthInColorFrame;		// UV mapped depth into color frame
+
+	ofShortPixels mDepthRawPix;			// raw depth values in mm (16bit int)
 
 	ofTexture mColorTex, mDepthTex;	// for drawing
 

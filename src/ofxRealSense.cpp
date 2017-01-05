@@ -54,7 +54,7 @@ bool ofxRealSense::open()
 		return false;
 	}
 
-	// init RGB stream
+	// init RGB stream, if desired
 	if (bColor)
 	{
 		status = mSenseMgr->EnableStream(PXCCapture::STREAM_TYPE_COLOR, 1920, 1080, 30.f);
@@ -66,12 +66,12 @@ bool ofxRealSense::open()
 		}
 	}
 
-	// enable 3D scanning module
+	// enable 3D scanning module, if desired
 	if (bScan)
 	{ 
-		if (mScanner.enable(mSenseMgr) == false) 
+		if (mScanner.enable(mSenseMgr) == false) // try
 		{ 
-			close(); 
+			close(); // close if failed
 			return false; 
 		}
 	}
@@ -83,6 +83,11 @@ bool ofxRealSense::open()
 		ofLogError("ofxRealSense") << "couldn't initialize Real Sense capture stream, error status: " << status;
 		close();
 		return false;
+	}
+	else 
+	{
+		// create coordinate mapper
+		mCoordinateMapper = mSenseMgr->QueryCaptureManager()->QueryDevice()->CreateProjection();
 	}
 
 
@@ -122,9 +127,14 @@ bool ofxRealSense::update()
 	// get image sample for depth and color processing
 	PXCCapture::Sample *sample = mSenseMgr->QuerySample();
 
-	updateDepth(sample);
+	updateDepth(sample); // update depth
 
-	if (bColor) { updateColor(sample); }
+	if (bColor) { updateColor(sample); } // update color
+	
+	if (bColor && bUVMap && mCoordinateMapper && sample->color && sample->depth) // map color <--> depth if desired
+	{
+		mapDepthAndColor(sample);
+	}
 
 
 	// update face scanning preview image
@@ -245,6 +255,73 @@ bool ofxRealSense::updateColor(PXCCapture::Sample *sample)
 	}
 
 	return true;
+}
+
+//--------------------------------------------------------------
+bool ofxRealSense::mapDepthAndColor(PXCCapture::Sample* sample)
+{
+	if (!sample->depth || !sample->color)
+	{
+		string which = (!sample->depth) ? "depth" : "color";
+		ofLogError("ofxRealSense") << "can't UV map depth and color images, no " << which << " image available";
+		return false;
+	}
+
+	bool success = true;
+
+	// first, get mapped color img to depth frame
+	PXCImage* colorInDepth = mCoordinateMapper->CreateColorImageMappedToDepth(sample->depth, sample->color);
+
+	PXCImage::ImageData cData;
+	pxcStatus status = colorInDepth->AcquireAccess(PXCImage::ACCESS_READ, PXCImage::PixelFormat::PIXEL_FORMAT_RGB32, &cData);
+	if (status < pxcStatus::PXC_STATUS_NO_ERROR)
+	{
+		ofLogError("ofxRealSense") << "couldn't access color img mapped to depth, error code: " << status;
+		success = false;
+	}
+	else
+	{
+		// load image to ofPixels
+		PXCImage::ImageInfo cInfo = colorInDepth->QueryInfo();
+		size_t w = (size_t)cInfo.width;
+		size_t h = (size_t)cInfo.height;
+		ofPixelFormat pxF = bBGR ? OF_PIXELS_BGRA : OF_PIXELS_RGBA;
+		mColorInDepthFrame.setFromPixels(reinterpret_cast<uint8_t *>(cData.planes[0]), w, h, pxF);
+	}
+
+	status = colorInDepth->ReleaseAccess(&cData);
+	if (status < pxcStatus::PXC_STATUS_NO_ERROR)
+	{
+		ofLogError("ofxRealSense") << "couldn't release access to color img mapped to depth, error code: " << status;
+	}
+
+
+	// next, get mapped depth img to color frame
+	PXCImage* depthInColor = mCoordinateMapper->CreateDepthImageMappedToColor(sample->depth, sample->color);
+	PXCImage::ImageData dData;
+	status = depthInColor->AcquireAccess(PXCImage::ACCESS_READ, PXCImage::PixelFormat::PIXEL_FORMAT_RGB32, &dData);
+	if (status < pxcStatus::PXC_STATUS_NO_ERROR)
+	{
+		ofLogError("ofxRealSense") << "couldn't access depth img mapped to color, error code: " << status;
+		success = false;
+	}
+	else
+	{
+		// load image to ofPixels
+		PXCImage::ImageInfo dInfo = depthInColor->QueryInfo();
+		size_t w = (size_t)dInfo.width;
+		size_t h = (size_t)dInfo.height;
+		ofPixelFormat pxF = bBGR ? OF_PIXELS_BGRA : OF_PIXELS_RGBA;
+		mDepthInColorFrame.setFromPixels(reinterpret_cast<uint8_t *>(dData.planes[0]), w, h, pxF);
+	}
+
+	status = depthInColor->ReleaseAccess(&dData);
+	if (status < pxcStatus::PXC_STATUS_NO_ERROR)
+	{
+		ofLogError("ofxRealSense") << "couldn't release access to depth img mapped to color, error code: " << status;
+	}
+
+	return success;
 }
 
 //--------------------------------------------------------------
