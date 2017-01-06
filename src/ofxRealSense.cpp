@@ -114,7 +114,7 @@ bool ofxRealSense::update()
 
 	// get new frame
 	/* TO DO: threading a la ofxKinect */
-	status = mSenseMgr->AcquireFrame(false); // this is blocking, but will wait for first new frame
+	status = mSenseMgr->AcquireFrame(true,10); // this is blocking, but will wait for first new frame
 	if (status < PXC_STATUS_NO_ERROR)
 	{
 		ofLogError("ofxRealSense") << "unable to acquire new frame, error status: " << status;
@@ -294,6 +294,7 @@ bool ofxRealSense::mapDepthAndColor(PXCCapture::Sample* sample)
 	{
 		ofLogError("ofxRealSense") << "couldn't release access to color img mapped to depth, error code: " << status;
 	}
+	colorInDepth->Release();
 
 
 	// next, get mapped depth img to color frame
@@ -320,6 +321,8 @@ bool ofxRealSense::mapDepthAndColor(PXCCapture::Sample* sample)
 	{
 		ofLogError("ofxRealSense") << "couldn't release access to depth img mapped to color, error code: " << status;
 	}
+	depthInColor->Release();
+
 
 	return success;
 }

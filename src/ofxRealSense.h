@@ -74,7 +74,7 @@ private:
 
 	ofShortPixels mDepthRawPix;			// raw depth values in mm (16bit int)
 
-	ofTexture mColorTex, mDepthTex;	// for drawing
+	ofTexture	mColorTex, mDepthTex;	// for drawing
 
 	// RealSense SDK interface
 	PXCSenseManager *mSenseMgr;
