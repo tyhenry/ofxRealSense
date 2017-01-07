@@ -23,6 +23,7 @@ public:
 
 	// initialize camera and modules (face tracking and face scanning)
 	bool setup(bool grabColor = true, bool useTextures = true, bool trackFaces = true, bool doScan = true);
+	void enableDepthColorMap(bool enable = true) { bUVMap = enable; } // only works if grabbing color
 
 	bool open();		// start streaming data
 	bool update();		// update data, call each frame
