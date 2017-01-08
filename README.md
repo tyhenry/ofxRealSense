@@ -1,23 +1,24 @@
 #ofxRealSense
 
-__WORK IN PROGRESS!__  
-Your mileage may vary. This addon is in active development.
+Active development, YMMV, things are bound to change...
 
 ##Description
 
-ofxRealSense is an openFrameworks addon to interface with the Intel RealSense SR300 depth camera.  
-It supports HD RGB and depth streams, and 3D face scanning. Soon, it should support 3D face & body tracking.  
-__Windows only.__   Tested with Windows 10, openFrameworks 0.9.8, Visual Studio Community 2015.
+ofxRealSense is an openFrameworks addon for the Intel RealSense SR300 depth camera.  
+It supports 1080p RGB and 480p depth streams, and 3D face scanning. Soon, it will support 3D face tracking, and hopefully skeleton tracking.  
+Tested on Windows 10, openFrameworks 0.9.8, Visual Studio Community 2015.
 
+__Windows only!__  
 __Requires Intel RealSense SDK 2016 *R2* (v10.0)__
 
 ###Installation:
 
 [Download and install Intel RealSense SDK 2016 __R2__ here](http://registrationcenter-download.intel.com/akdlm/irc_nas/vcp/9078/intel_rs_sdk_offline_package_10.0.26.0396.exe)  
-_This is a direct download of a 1.8GB exe installation file._
+_direct download of 1.8GB exe installation file_
 
-(Note: Intel RealSense SDK 2016 __R3__ (v11.0) was released Dec. 2016, which removed face tracking, person tracking, and other modules from the SDK.  
-__As such, this addon requires R2!__  [More info at Intel RealSense SDK page](https://software.intel.com/en-us/intel-realsense-sdk))
+Note: Intel RealSense SDK 2016 R3 (v11.0) was released Dec. 2016, which removed face tracking, person tracking, and other modules from the SDK.  
+__As such, this addon requires R2!__  
+[More info at Intel RealSense SDK page](https://software.intel.com/en-us/intel-realsense-sdk)
 
 __To create new project:__
 
@@ -42,7 +43,8 @@ This addon is based on Seth Gibson's [ofxRSSDKv2](https://github.com/tyhenry/ofx
 
 __In Progress/Working__
 
-* (unsynced) RGB & Depth camera --> ofPixels & ofTexture
+* RGB & Depth camera --> ofPixels & ofTexture
+* Image mapping from rgb<-->depth
 * Face Scanning module: preview, scan, export to OBJ, MTL, JPG, JSON (face tracking landmarks)
 
 __To Do:__
