@@ -1,7 +1,10 @@
 #pragma once
 #include "pxc3dscan.h"
 #include "ofMain.h"
+#include "ofxRSUtils.h"
 #include "ofxRSScanAlertHandler.h"
+
+using namespace ofxRSUtils;
 
 class ofxRSScan {
 

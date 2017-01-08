@@ -11,7 +11,10 @@
 #include "pxcprojection.h"		// coord mapper
 #include "pxcfacemodule.h"		// face tracker module
 #include "pxc3dscan.h"			// 3d scanner module
+#include "ofxRSUtils.h"
 #include "ofxRSScan.h"
+
+using namespace ofxRSUtils;
 
 class ofxRealSense 
 {
@@ -53,12 +56,14 @@ public:
 
 	const ofPixels& getColorPixelsInDepthFrame() { return mColorInDepthFrame; }
 	const ofPixels& getDepthPixelsInColorFrame() { return mDepthInColorFrame; }
+	const ofPixels& getDepthRawPixelsInColorFrame() { return mDepthRawInColorFrame; }
 
 private:
 
 	bool updateDepth(PXCCapture::Sample* sample);
 	bool updateColor(PXCCapture::Sample* sample);
 	bool mapDepthAndColor(PXCCapture::Sample* sample);
+	bool uvMapDepthToColor(PXCImage* depth);
 
 	bool	bColor = true,
 			bUseTex = true,
@@ -73,7 +78,9 @@ private:
 				mColorInDepthFrame,		// UV mapped color into depth frame
 				mDepthInColorFrame;		// UV mapped depth into color frame
 
-	ofShortPixels mDepthRawPix;			// raw depth values in mm (16bit int)
+	ofShortPixels	mDepthRawPix,			// raw depth values in mm (16bit int)
+					mDepthRawInColorFrame;	// UV mapped raw depth into color frame
+
 
 	ofTexture	mColorTex, mDepthTex;	// for drawing
 
@@ -89,14 +96,5 @@ private:
 
 	// 3d scanning module
 	ofxRSScan mScanner;
-
-	// utility to check if processor is little-endian (e.g. Intel)
-	// if little-endian, Intel uses BGR (not RGB) pixel channel order
-	bool isLittleEndian()
-	{
-		short int number = 0x1;
-		char *numPtr = (char*)&number;
-		return (numPtr[0] == 1);
-	}
 
 };

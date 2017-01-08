@@ -5,9 +5,7 @@ ofxRSScan::ofxRSScan()
 {
 	// check little endian-ness
 	// to see if pixel channel order is BGR or RGB from Real Sense SDK
-	short int number = 0x1;
-	char *numPtr = (char*)&number;
-	bBGR = (numPtr[0] == 1);
+	bBGR = isLittleEndian();
 }
 
 //--------------------------------------------------------------
@@ -81,7 +79,6 @@ bool ofxRSScan::configure( /* to do: options */ )
 		return false;
 	}
 
-
 	// scan alert callback handler
 	scanner->Subscribe(&alertHandler);
 
@@ -136,7 +133,7 @@ bool ofxRSScan::updatePreview(bool bMakeTexture) {
 		return false;
 	}
 
-	// get pixels data
+	// get pixels datas
 
 	PXCImage::ImageData imgData;
 	pxcStatus status = img->AcquireAccess(PXCImage::ACCESS_READ, PXCImage::PIXEL_FORMAT_RGB24, &imgData);

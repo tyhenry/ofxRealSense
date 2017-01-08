@@ -84,12 +84,9 @@ bool ofxRealSense::open()
 		close();
 		return false;
 	}
-	else 
-	{
-		// create coordinate mapper
-		mCoordinateMapper = mSenseMgr->QueryCaptureManager()->QueryDevice()->CreateProjection();
-	}
 
+	// create coordinate mapper
+	mCoordinateMapper = mSenseMgr->QueryCaptureManager()->QueryDevice()->CreateProjection();
 
 	// config 3D scanning
 	if (bScan) { bScan = mScanner.configure(); }
@@ -117,7 +114,7 @@ bool ofxRealSense::update()
 	status = mSenseMgr->AcquireFrame(true,10); // this is blocking for 10ms, returns error if not all frames ready (e.g. depth + color + scan)
 	if (status < PXC_STATUS_NO_ERROR)
 	{
-		ofLogError("ofxRealSense") << "unable to acquire new frame, error status: " << status;
+		ofLogWarning("ofxRealSense") << "unable to acquire new frame, error status: " << status;
 		return false;
 	}
 
@@ -158,60 +155,16 @@ bool ofxRealSense::updateDepth(PXCCapture::Sample *sample)
 		return false;
 	}
 	
-	// get depth image data from sample
-	// PIXEL_FORMAT_DEPTH means pixel buffer is 16-bit unsigned int in millimeters
-	PXCImage::ImageData depthData;
-	pxcStatus status = sample->depth->AcquireAccess(PXCImage::ACCESS_READ, PXCImage::PIXEL_FORMAT_DEPTH, &depthData);
-	if (status < PXC_STATUS_NO_ERROR)
-	{
-		ofLogError("ofxRealSense") << "can't access depth map image data, error status: " << status;
-		sample->depth->ReleaseAccess(&depthData);
-		return false;
-	}
-	
-	// load depth image data to ofPixels
-	PXCImage::ImageInfo depthInfo = sample->depth->QueryInfo();
-	size_t w = depthInfo.width;
-	size_t h = depthInfo.height;
-	mDepthRawPix.setFromPixels(reinterpret_cast<uint16_t *>(depthData.planes[0]), w, h, OF_PIXELS_GRAY);
+	// load raw depth data into mDepthRawPix (raw depth is measured in mm, as 16bit single channel ofShortPixels)
+	bool hasDepthRaw = pxcImageToOfPixels(sample->depth, PXCImage::PIXEL_FORMAT_DEPTH, &mDepthRawPix);
 
-	// release access
-	status = sample->depth->ReleaseAccess(&depthData);
-	if (status < PXC_STATUS_NO_ERROR)
-	{
-		ofLogError("ofxRealSense") << "error releasing access to depth image data, error status: " << status;
-		return false;
-	}
+	// load 8-bit grayscale depth image data into mDepthPix (for easy drawing)
+	bool hasDepth8 = pxcImageToOfPixels(sample->depth, PXCImage::PIXEL_FORMAT_RGB32, &mDepthPix);
 
-	// load depth image data as 8-bit (for easy drawing)
-	PXCImage::ImageData depth8Data;
-	status = sample->depth->AcquireAccess(PXCImage::ACCESS_READ, PXCImage::PIXEL_FORMAT_RGB32, &depth8Data);
-	if (status < PXC_STATUS_NO_ERROR)
-	{
-		ofLogError("ofxRealSense") << "can't access depth grayscale image data, error status: " << status;
-		sample->depth->ReleaseAccess(&depth8Data);
-		return false;
-	}
+	// load 8-bit depth to texture (if needed + available)
+	if (bUseTex && hasDepth8) { mDepthTex.loadData(mDepthPix); }
 
-	// load grayscale depth data to ofPixels
-	ofPixelFormat pxF = bBGR ? OF_PIXELS_BGRA : OF_PIXELS_RGBA;
-	mDepthPix.setFromExternalPixels(reinterpret_cast<uint8_t *>(depth8Data.planes[0]), w, h, pxF);
-
-	// load to texture (if needed)
-	if (bUseTex)
-	{
-		mDepthTex.loadData(mDepthPix);
-	}
-
-	// release
-	status = sample->depth->ReleaseAccess(&depth8Data);
-	if (status < PXC_STATUS_NO_ERROR)
-	{
-		ofLogError("ofxRealSense") << "error releasing access to depth grayscale image data, error status: " << status;
-		return false;
-	}
-
-	return true;
+	return (hasDepthRaw && hasDepth8);
 }
 
 //--------------------------------------------------------------
@@ -223,38 +176,13 @@ bool ofxRealSense::updateColor(PXCCapture::Sample *sample)
 		return false;
 	}
 
-	// get color image data from sample
-	PXCImage::ImageData colorData;
-	pxcStatus status = sample->color->AcquireAccess(PXCImage::ACCESS_READ, PXCImage::PIXEL_FORMAT_RGB24, &colorData);
-	if (status < PXC_STATUS_NO_ERROR)
-	{
-		ofLogError("ofxRealSens") << "can't access color image data, error status: " << status;
-		sample->color->ReleaseAccess(&colorData);
-		return false;
-	}
+	// copy color image data to ofPixels
+	bool hasColor = pxcImageToOfPixels(sample->color, PXCImage::PIXEL_FORMAT_RGB24, &mColorPix);
 
-	// load color image data to ofPixels
-	PXCImage::ImageInfo colorInfo = sample->color->QueryInfo();
-	size_t w = (size_t)colorInfo.width;
-	size_t h = (size_t)colorInfo.height;
-	ofPixelFormat pxF = bBGR ? OF_PIXELS_BGR : OF_PIXELS_RGB;
-	mColorPix.setFromPixels(reinterpret_cast<uint8_t *>(colorData.planes[0]), w, h, pxF);
+	// load pixels to texture (if needed + available)
+	if (bUseTex & hasColor) { mColorTex.loadData(mColorPix); }
 
-	// load pixels to texture (if needed)
-	if (bUseTex)
-	{
-		mColorTex.loadData(mColorPix);
-	}
-
-	// release access
-	status = sample->color->ReleaseAccess(&colorData);
-	if (status < PXC_STATUS_NO_ERROR)
-	{
-		ofLogError("ofxRealSense") << "error releasing access to color image data, error status: " << status;
-		return false;
-	}
-
-	return true;
+	return hasColor;
 }
 
 //--------------------------------------------------------------
@@ -269,62 +197,43 @@ bool ofxRealSense::mapDepthAndColor(PXCCapture::Sample* sample)
 
 	bool success = true;
 
-	// first, get mapped color img to depth frame
+	// map color img to depth frame
 	PXCImage* colorInDepth = mCoordinateMapper->CreateColorImageMappedToDepth(sample->depth, sample->color);
 
-	PXCImage::ImageData cData;
-	pxcStatus status = colorInDepth->AcquireAccess(PXCImage::ACCESS_READ, PXCImage::PixelFormat::PIXEL_FORMAT_RGB32, &cData);
-	if (status < pxcStatus::PXC_STATUS_NO_ERROR)
-	{
-		ofLogError("ofxRealSense") << "couldn't access color img mapped to depth, error code: " << status;
-		success = false;
-	}
-	else
-	{
-		// load image to ofPixels
-		PXCImage::ImageInfo cInfo = colorInDepth->QueryInfo();
-		size_t w = (size_t)cInfo.width;
-		size_t h = (size_t)cInfo.height;
-		ofPixelFormat pxF = bBGR ? OF_PIXELS_BGRA : OF_PIXELS_RGBA;
-		mColorInDepthFrame.setFromPixels(reinterpret_cast<uint8_t *>(cData.planes[0]), w, h, pxF);
-	}
-
-	status = colorInDepth->ReleaseAccess(&cData);
-	if (status < pxcStatus::PXC_STATUS_NO_ERROR)
-	{
-		ofLogError("ofxRealSense") << "couldn't release access to color img mapped to depth, error code: " << status;
-	}
+	// copy to ofPixels
+	bool hasColorInDepth = pxcImageToOfPixels(colorInDepth, PXCImage::PIXEL_FORMAT_RGB32, &mColorInDepthFrame);
 	colorInDepth->Release();
 
-
-	// next, get mapped depth img to color frame
+	// map depth img to color frame
 	PXCImage* depthInColor = mCoordinateMapper->CreateDepthImageMappedToColor(sample->depth, sample->color);
-	PXCImage::ImageData dData;
-	status = depthInColor->AcquireAccess(PXCImage::ACCESS_READ, PXCImage::PixelFormat::PIXEL_FORMAT_RGB32, &dData);
-	if (status < pxcStatus::PXC_STATUS_NO_ERROR)
-	{
-		ofLogError("ofxRealSense") << "couldn't access depth img mapped to color, error code: " << status;
-		success = false;
-	}
-	else
-	{
-		// load image to ofPixels
-		PXCImage::ImageInfo dInfo = depthInColor->QueryInfo();
-		size_t w = (size_t)dInfo.width;
-		size_t h = (size_t)dInfo.height;
-		ofPixelFormat pxF = bBGR ? OF_PIXELS_BGRA : OF_PIXELS_RGBA;
-		mDepthInColorFrame.setFromPixels(reinterpret_cast<uint8_t *>(dData.planes[0]), w, h, pxF);
-	}
 
-	status = depthInColor->ReleaseAccess(&dData);
-	if (status < pxcStatus::PXC_STATUS_NO_ERROR)
-	{
-		ofLogError("ofxRealSense") << "couldn't release access to depth img mapped to color, error code: " << status;
-	}
+	// copy to ofPixels
+	bool hasDepthInColor = pxcImageToOfPixels(depthInColor, PXCImage::PIXEL_FORMAT_RGB32, &mDepthInColorFrame); // 8 bit rgb
+	bool hasDepthRawInColor = pxcImageToOfPixels(depthInColor, PXCImage::PIXEL_FORMAT_DEPTH, &mDepthRawInColorFrame); // 16 bit gray (raw)
 	depthInColor->Release();
 
+	return (hasColorInDepth && hasDepthInColor && hasDepthRawInColor);
+}
 
-	return success;
+bool ofxRealSense::uvMapDepthToColor(PXCImage* depth)
+{
+	/*
+	if (!depth) return false;
+	
+	PXCImage::ImageInfo info = depth->QueryInfo();
+	int nDepthPts = info.width * info.height;
+
+	// Calculate the UV map.
+	PXCPointF32 *uvmap = new PXCPointF32[nDepthPts];
+	mCoordinateMapper->QueryUVMap(depth, uvmap);
+
+	// Translate depth points uv[] to color ij[]
+	for (int i = 0; i<nDepthPts; i++) {
+		ij[i].x = uvmap[(int)uv[i].y*dinfo.width + (int)uv[i].x].x*cinfo.width;
+		ij[i].y = uvmap[(int)uv[i].y*dinfo.width + (int)uv[i].x].y*cinfo.height;
+	}
+	*/
+	return false;
 }
 
 //--------------------------------------------------------------
