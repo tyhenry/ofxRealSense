@@ -197,21 +197,18 @@ bool ofxRealSense::mapDepthAndColor(PXCCapture::Sample* sample)
 
 	bool success = true;
 
-	// map color img to depth frame
-	PXCImage* colorInDepth = mCoordinateMapper->CreateColorImageMappedToDepth(sample->depth, sample->color);
-
-	// copy to ofPixels
-	bool hasColorInDepth = pxcImageToOfPixels(colorInDepth, PXCImage::PIXEL_FORMAT_RGB32, &mColorInDepthFrame);
+	// map color img to depth frame, and copy to ofPixels
+	PXCImage* colorInDepth = mCoordinateMapper->CreateColorImageMappedToDepth(sample->depth, sample->color); // map
+	bool hasColorInDepth = pxcImageToOfPixels(colorInDepth, PXCImage::PIXEL_FORMAT_RGB32, &mColorInDepthFrame); // copy
 	colorInDepth->Release();
 
-	// map depth img to color frame
+	// same for depth and raw depth
 	PXCImage* depthInColor = mCoordinateMapper->CreateDepthImageMappedToColor(sample->depth, sample->color);
-
-	// copy to ofPixels
-	bool hasDepthInColor = pxcImageToOfPixels(depthInColor, PXCImage::PIXEL_FORMAT_RGB32, &mDepthInColorFrame); // 8 bit rgb
 	bool hasDepthRawInColor = pxcImageToOfPixels(depthInColor, PXCImage::PIXEL_FORMAT_DEPTH, &mDepthRawInColorFrame); // 16 bit gray (raw)
-	depthInColor->Release();
+	bool hasDepthInColor = pxcImageToOfPixels(depthInColor, PXCImage::PIXEL_FORMAT_RGB32, &mDepthInColorFrame); // 8 bit rgb
 
+	depthInColor->Release();
+	
 	return (hasColorInDepth && hasDepthInColor && hasDepthRawInColor);
 }
 
@@ -221,19 +218,36 @@ bool ofxRealSense::uvMapDepthToColor(PXCImage* depth)
 	if (!depth) return false;
 	
 	PXCImage::ImageInfo info = depth->QueryInfo();
-	int nDepthPts = info.width * info.height;
+	size_t nDepthPts = info.width * info.height;
 
-	// Calculate the UV map.
-	PXCPointF32 *uvmap = new PXCPointF32[nDepthPts];
-	mCoordinateMapper->QueryUVMap(depth, uvmap);
+	// Calculate the UV map if needed
+	//PXCPointF32 *uvmap = new PXCPointF32[nDepthPts];
+	pxcStatus status = PXC_STATUS_NO_ERROR;
+	if (mUVDepthToColor.size() != nDepthPts) {
+		mUVDepthToColor.resize(nDepthPts);
+		status = mCoordinateMapper->QueryUVMap(depth, mUVDepthToColor.data());
+	}
+	if (status < PXC_STATUS_NO_ERROR)
+	{
+		ofLogError("ofxRealSense") << "couldn't acquire UV map, error status: " << status;
+		return false;
+	}
+
+	ofPixels d2c = ofPixels(mColorPix);
+	if (!d2c.isAllocated()) return false;
+
+	auto& uv = mUVDepthToColor;
+	size_t w = d2c.getWidth(); size_t h = d2c.getHeight();
 
 	// Translate depth points uv[] to color ij[]
 	for (int i = 0; i<nDepthPts; i++) {
-		ij[i].x = uvmap[(int)uv[i].y*dinfo.width + (int)uv[i].x].x*cinfo.width;
-		ij[i].y = uvmap[(int)uv[i].y*dinfo.width + (int)uv[i].x].y*cinfo.height;
+		d2c.setColor(uv[i].x*w, uv[i].y*h, )
+		ij[i].x = ;
+		ij[i].y = uv[i].y*d2c.getHeight();
 	}
 	*/
-	return false;
+	
+	return true;
 }
 
 //--------------------------------------------------------------

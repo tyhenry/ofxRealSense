@@ -6,9 +6,9 @@ template <class PixelType>
 bool ofxRSUtils::pxcImageToOfPixels(PXCImage* image, PXCImage::PixelFormat imgFormat, ofPixels_<PixelType>* toPixels)
 {
 	if (image == nullptr || toPixels == nullptr) return false;
-	bool bgr = isLittleEndian(); // bgr or rgb order of PXCImage data?
+	static bool bgr = isLittleEndian(); // bgr or rgb order of PXCImage data
 
-								 // check image format, only RGBA, RGB, or grayscale supported for now
+	// check image format, only RGBA, RGB, or grayscale supported for now
 	ofPixelFormat pxf = OF_PIXELS_UNKNOWN;
 	switch (imgFormat)
 	{
@@ -19,6 +19,7 @@ bool ofxRSUtils::pxcImageToOfPixels(PXCImage* image, PXCImage::PixelFormat imgFo
 			pxf = bgr ? OF_PIXELS_BGR : OF_PIXELS_RGB;
 			break;
 		case PXCImage::PixelFormat::PIXEL_FORMAT_DEPTH:
+		case PXCImage::PixelFormat::PIXEL_FORMAT_DEPTH_RAW:
 			pxf = OF_PIXELS_GRAY;
 			break;
 		default:
@@ -38,10 +39,6 @@ bool ofxRSUtils::pxcImageToOfPixels(PXCImage* image, PXCImage::PixelFormat imgFo
 	}
 
 	// load image data into ofPixels
-	//PXCImage::ImageInfo info = image->QueryInfo();
-	//size_t w = info.width;
-	//size_t h = info.height;
-	//toPixels->setFromPixels(reinterpret_cast<uint8_t *>(data.planes[0]), w, h, OF_PIXELS_GRAY);
 	setOfPixels(toPixels, data, image->QueryInfo(), pxf);
 
 	// release access to image

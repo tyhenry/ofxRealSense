@@ -23,6 +23,7 @@ friend class ofxRSScan;
 public:
 
 	ofxRealSense();
+	~ofxRealSense() {}
 
 	// initialize camera and modules (face tracking and face scanning)
 	bool setup(bool grabColor = true, bool useTextures = true, bool trackFaces = true, bool doScan = true);
@@ -56,7 +57,8 @@ public:
 
 	const ofPixels& getColorPixelsInDepthFrame() { return mColorInDepthFrame; }
 	const ofPixels& getDepthPixelsInColorFrame() { return mDepthInColorFrame; }
-	const ofPixels& getDepthRawPixelsInColorFrame() { return mDepthRawInColorFrame; }
+	const ofShortPixels& getDepthRawPixelsInColorFrame() { return mDepthRawInColorFrame; }
+	//const vector<uint16_t>& getDepthRawInColorFrameBuffer() { return mDepthRawInColorFrameBuffer; }
 
 private:
 
@@ -80,9 +82,12 @@ private:
 
 	ofShortPixels	mDepthRawPix,			// raw depth values in mm (16bit int)
 					mDepthRawInColorFrame;	// UV mapped raw depth into color frame
-
+	//vector<uint16_t> mDepthRawInColorFrameBuffer;
 
 	ofTexture	mColorTex, mDepthTex;	// for drawing
+
+	vector<PXCPointF32> mUVDepthToColor; // [640 * 480]; // uv map depth -> color coords
+	vector<PXCPointF32> mUVColorToDepth; // [1920 * 1080]; // inverse uv map
 
 	// RealSense SDK interface
 	PXCSenseManager *mSenseMgr;
