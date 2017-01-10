@@ -26,7 +26,7 @@ public:
 	~ofxRealSense() {}
 
 	// initialize camera and modules (face tracking and face scanning)
-	bool setup(bool grabColor = true, bool useTextures = true, bool trackFaces = true, bool doScan = true);
+	bool setup(bool grabColor = true, bool useTextures = true, bool mirror = false, bool trackFaces = true, bool doScan = true);
 	void enableDepthColorMap(bool enable = true) { bUVMap = enable; } // only works if grabbing color
 
 	bool open();		// start streaming data
@@ -69,6 +69,7 @@ private:
 
 	bool	bColor = true,
 			bUseTex = true,
+			bMirror = false,
 			bFaces = true,
 			bScan = true,
 			bUVMap = true, // map color <--> depth

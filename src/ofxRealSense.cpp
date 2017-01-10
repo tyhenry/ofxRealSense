@@ -6,7 +6,7 @@ ofxRealSense::ofxRealSense()
 }
 
 //--------------------------------------------------------------
-bool ofxRealSense::setup(bool grabColor, bool useTextures, bool trackFaces, bool doScan)
+bool ofxRealSense::setup(bool grabColor, bool useTextures, bool mirror, bool trackFaces, bool doScan)
 {
 	if (bIsOpen || mSenseMgr != NULL)
 	{
@@ -17,6 +17,7 @@ bool ofxRealSense::setup(bool grabColor, bool useTextures, bool trackFaces, bool
 	// set configuration here - actual SDK init will happen in open()
 	bColor = grabColor;
 	bUseTex = useTextures;
+	bMirror = mirror;
 	bFaces = trackFaces;
 	bScan = doScan;
 
@@ -87,6 +88,15 @@ bool ofxRealSense::open()
 
 	// create coordinate mapper
 	mCoordinateMapper = mSenseMgr->QueryCaptureManager()->QueryDevice()->CreateProjection();
+
+	// set mirror mode
+	PXCCapture::Device::MirrorMode mirrorMode = bMirror ? PXCCapture::Device::MirrorMode::MIRROR_MODE_HORIZONTAL : PXCCapture::Device::MirrorMode::MIRROR_MODE_DISABLED;
+	status = mSenseMgr->QueryCaptureManager()->QueryDevice()->SetMirrorMode(mirrorMode);
+	if (status < PXC_STATUS_NO_ERROR)
+	{
+		string mode = bMirror ? "enabled" : "disabled";
+		ofLogError("ofxRealSense") << "issue setting mirror mode to " << mode << ", error status: " << status;
+	}
 
 	// config 3D scanning
 	if (bScan) { bScan = mScanner.configure(); }
