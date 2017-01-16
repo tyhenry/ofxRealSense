@@ -13,6 +13,7 @@
 #include "pxc3dscan.h"			// 3d scanner module
 #include "ofxRSUtils.h"
 #include "ofxRSScan.h"
+#include "ofxRSFaceTracker.h"
 
 using namespace ofxRSUtils;
 
