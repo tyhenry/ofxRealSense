@@ -14,6 +14,13 @@ public:
 	bool update();
 	bool disable(); // ?
 
+	const vector<vector<PXCFaceData::LandmarkPoint>>& getFaceLandmarks() { return faces; }
+	int getNumFaces() { return faces.size(); }
+	vector<ofVec3f> getFaceLandmarksWorld(int face);
+	vector<ofVec2f> getFaceLandmarksColor(int face);
+	vector < vector<ofVec3f>> getFaceLandmarksWorld();
+	vector < vector<ofVec2f>> getFaceLandmarksColor();
+
 private:
 
 	bool bActive = false;

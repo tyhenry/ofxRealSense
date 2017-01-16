@@ -114,3 +114,35 @@ bool ofxRSFaceTracker::disable() {
 	return false;
 }
 
+vector<vector<ofVec3f>> ofxRSFaceTracker::getFaceLandmarksWorld()
+{
+	vector<vector<ofVec3f>> landmarks;
+	for (auto& face : faces)
+	{
+		vector<ofVec3f> l;
+		for (auto& landmark : face)
+		{
+			l.push_back(ofVec3f(landmark.world.x, landmark.world.y, landmark.world.z));
+		}
+		landmarks.push_back(l);
+	}
+	return landmarks;
+}
+
+vector<vector<ofVec2f>> ofxRSFaceTracker::getFaceLandmarksColor()
+{
+	vector<vector<ofVec2f>> landmarks;
+	for (auto& face : faces)
+	{
+		vector<ofVec2f> l;
+		for (auto& landmark : face)
+		{
+			l.push_back(ofVec2f(landmark.image.x, landmark.world.y));
+		}
+		landmarks.push_back(l);
+	}
+	return landmarks;
+}
+
+
+

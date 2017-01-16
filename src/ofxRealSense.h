@@ -44,6 +44,11 @@ public:
 	void drawScanPreview(float x, float y, float w = 0.f, float h = 0.f);
 	void drawScanPreview() { drawScanPreview(0, 0); }
 
+	// face tracker
+	int getNumTrackedFaces() { return mFaceTracker.getNumFaces(); }
+	vector<vector<ofVec3f>> getFaceTrackingLandmarks() { return mFaceTracker.getFaceLandmarksWorld(); }
+	vector<vector<ofVec2f>> getFaceTrackingLandmarksWorld() { return mFaceTracker.getFaceLandmarksColor(); }
+
 	// scanning (face only for now)
 	bool startScan() { return mScanner.start(); }
 	bool stopScan() { return mScanner.stop(); }
@@ -97,9 +102,7 @@ private:
 	PXCCapture::Sample *mCurrentSample;
 	
 	// face tracking module
-	PXCFaceModule *mFaceTracker;
-	PXCFaceData* mFaceData;
-	vector<vector<PXCFaceData::LandmarkPoint>> mFaces;
+	ofxRSFaceTracker mFaceTracker;
 
 	// 3d scanning module
 	ofxRSScan mScanner;

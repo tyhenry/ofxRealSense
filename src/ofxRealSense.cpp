@@ -67,6 +67,16 @@ bool ofxRealSense::open()
 		}
 	}
 
+	// enable face tracking module
+	if (bFaces)
+	{
+		if (mFaceTracker.enable(mSenseMgr) == false)
+		{
+			close();
+			return false;
+		}
+	}
+
 	// enable 3D scanning module, if desired
 	if (bScan)
 	{ 
@@ -143,12 +153,10 @@ bool ofxRealSense::update()
 		mapDepthAndColor(sample);
 	}
 
+	if (bFaces) { mFaceTracker.update(); }
 
 	// update face scanning preview image
 	if (bScan) { mScanner.updatePreview(bUseTex); }
-
-	/* to do: update face tracking */
-
 
 	// release frame to continue
 	mSenseMgr->ReleaseFrame();
