@@ -46,8 +46,8 @@ public:
 
 	// face tracker
 	int getNumTrackedFaces() { return mFaceTracker.getNumFaces(); }
-	vector<vector<ofVec3f>> getFaceTrackingLandmarks() { return mFaceTracker.getFaceLandmarksWorld(); }
-	vector<vector<ofVec2f>> getFaceTrackingLandmarksWorld() { return mFaceTracker.getFaceLandmarksColor(); }
+	vector<vector<ofVec3f>> getFaceTrackingLandmarksWorld() { return mFaceTracker.getFaceLandmarksWorld(); }
+	vector<vector<ofVec2f>> getFaceTrackingLandmarksColor() { return mFaceTracker.getFaceLandmarksColor(); }
 
 	// scanning (face only for now)
 	bool startScan() { return mScanner.start(); }
