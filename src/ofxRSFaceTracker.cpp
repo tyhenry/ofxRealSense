@@ -79,6 +79,7 @@ bool ofxRSFaceTracker::update() {
 
 	// num faces
 	pxcI32 nFaces = faceData->QueryNumberOfDetectedFaces();
+	cout << "num faces: " << nFaces << endl;
 
 	faces.clear();
 	faces.resize((size_t)nFaces);
@@ -137,7 +138,7 @@ vector<vector<ofVec2f>> ofxRSFaceTracker::getFaceLandmarksColor()
 		vector<ofVec2f> l;
 		for (auto& landmark : face)
 		{
-			l.push_back(ofVec2f(landmark.image.x, landmark.world.y));
+			l.push_back(ofVec2f(landmark.image.x, landmark.image.y));
 		}
 		landmarks.push_back(l);
 	}
