@@ -79,7 +79,6 @@ bool ofxRSFaceTracker::update() {
 
 	// num faces
 	pxcI32 nFaces = faceData->QueryNumberOfDetectedFaces();
-	cout << "num faces: " << nFaces << endl;
 
 	faces.clear();
 	faces.resize((size_t)nFaces);
