@@ -29,7 +29,9 @@ common:
 	# include search paths, this will be usually parsed from the file system
 	# but if the addon or addon libraries need special search paths they can be
 	# specified here separated by spaces or one per line using +=
-	ADDON_INCLUDES += $(RSSDK_DIR)include
+	
+	ADDON_INCLUDES += $(RSSDK_DIR)include\
+	ADDON_LIBS += $(RSSDK_DIR)lib\$(Platform)\
 	
 	# any special flag that should be passed to the compiler when using this
 	# addon
@@ -61,7 +63,7 @@ common:
 	# ADDON_LIBS_EXCLUDE =
 
 vs:
-	# ADDON_LIBS += $(RSSDK_DIR)lib
+	
 	
 linux64:
 	# binary libraries, these will be usually parsed from the file system but some 
