@@ -1,5 +1,51 @@
 #include "ofxRSFaceTracker.h"
 
+/*------------*/
+/* ofxRSFace */
+/*-----------*/
+
+bool ofxRSFace::loadFrom(PXCFaceData::Face* face)
+{
+	if (!face) return false;
+
+	landmarks.clear();
+
+	PXCFaceData::LandmarksData* landmarksData = face->QueryLandmarks();
+	if (!landmarksData) return false;
+
+	// loop through landmark groups enum
+	for (int g = LANDMARK_GROUP_LEFT_EYE; g <= LANDMARK_GROUP_LEFT_EAR; g *= 2)
+	{
+		PXCFaceData::LandmarksGroupType group = (PXCFaceData::LandmarksGroupType)g;
+
+		int nPts = landmarksData->QueryNumPointsByGroup(group);
+		PXCFaceData::LandmarkPoint* points = new PXCFaceData::LandmarkPoint[nPts];
+
+		if (landmarksData->QueryPointsByGroup(group, points)) // load points into array
+		{
+			// push points into landmarks vector
+			for (int p = 0; p < nPts; p++)
+				landmarks.push_back(Landmark(points[p], (LandmarkGroup)group));
+		}
+	}
+	return true;
+}
+
+vector<ofxRSFace::Landmark> ofxRSFace::getLandmarksByGroup(LandmarkGroup group)
+{
+	vector<Landmark> lms;
+	for (auto& landmark : landmarks) {
+		if (landmark.group == group) lms.push_back(landmark);
+	}
+	return lms;
+}
+
+
+
+/*------------------*/
+/* ofxRSFaceTracker */
+/*------------------*/
+
 bool ofxRSFaceTracker::enable(PXCSenseManager* senseManagerPtr, bool useDepth) {
 
 	bActive = false;
@@ -69,6 +115,7 @@ bool ofxRSFaceTracker::update() {
 	}
 
 	pxcStatus status;
+
 	// update face data
 	status = faceData->Update();
 	if (status < PXC_STATUS_NO_ERROR)
@@ -87,10 +134,20 @@ bool ofxRSFaceTracker::update() {
 
 		// get landmarks
 		PXCFaceData::Face* face = faceData->QueryFaceByIndex(i);
+		faces[i] = ofxRSFace(face);
+	}
+	/*
 		if (!face) continue;
 
 		PXCFaceData::LandmarksData* landmarkData = face->QueryLandmarks();
 		if (!landmarkData) continue;
+
+		for (int i = 1; i <= 256; i *= 2, f++) { // loop through the enum
+			PXCFaceData::LandmarksGroupType group = (PXCFaceData::LandmarksGroupType)i;
+			int nPts = landmarkData->QueryNumPointsByGroup(group);
+			faces
+			landmarkData->QueryPointsByGroup(group, )
+		}
 
 		faces[i].resize((size_t)landmarkData->QueryNumPoints()); // allocate space for landmarks
 
@@ -98,6 +155,7 @@ bool ofxRSFaceTracker::update() {
 		{
 			ofLogError("ofxRSSDK") << "unable to query landmarks for face " << i;
 		}
+		*/
 	}
 
 	return true;
@@ -105,7 +163,7 @@ bool ofxRSFaceTracker::update() {
 
 bool ofxRSFaceTracker::disable() {
 
-	if (bActive && senseMgr && faceData)
+	if (bActive && faceData)
 	{
 		faceData->Release();
 		bActive = false;
@@ -114,7 +172,21 @@ bool ofxRSFaceTracker::disable() {
 	return false;
 }
 
-vector<vector<ofVec3f>> ofxRSFaceTracker::getFaceLandmarksWorld()
+vector<ofVec3f> ofxRSFaceTracker::getFaceLandmarksWorldByGroup(int face, PXCFaceData::LandmarksGroupType)
+{
+	vector<ofVec3f> landmarks;
+	if (face < 0 && face > facesGroups.size())
+	{
+
+	}
+}
+
+vector<ofVec2f> ofxRSFaceTracker::getFaceLandmarksColorByGroup(int face, PXCFaceData::LandmarksGroupType)
+{
+	return vector<ofVec2f>();
+}
+
+vector<vector<ofVec3f>> ofxRSFaceTracker::getFacesLandmarksWorld()
 {
 	vector<vector<ofVec3f>> landmarks;
 	for (auto& face : faces)
@@ -129,7 +201,7 @@ vector<vector<ofVec3f>> ofxRSFaceTracker::getFaceLandmarksWorld()
 	return landmarks;
 }
 
-vector<vector<ofVec2f>> ofxRSFaceTracker::getFaceLandmarksColor()
+vector<vector<ofVec2f>> ofxRSFaceTracker::getFacesLandmarksColor()
 {
 	vector<vector<ofVec2f>> landmarks;
 	for (auto& face : faces)
