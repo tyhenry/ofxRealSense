@@ -45,10 +45,13 @@ public:
 	void drawScanPreview() { drawScanPreview(0, 0); }
 
 	// face tracker
+	const vector<ofxRSFace>& getTrackedFaces() const { return mFaceTracker.getFaces(); }
 	int getNumTrackedFaces() { return mFaceTracker.getNumFaces(); }
-	vector<vector<ofVec3f>> getFaceTrackingLandmarksWorld() { return mFaceTracker.getFacesLandmarksWorld(); }
-	vector<vector<ofVec2f>> getFaceTrackingLandmarksColor() { return mFaceTracker.getFacesLandmarksColor(); }
-	const vector<vector<PXCFaceData::LandmarkPoint>>& getFaceTrackingLandmarksRaw() { return mFaceTracker.getFacesLandmarks(); }
+	const ofxRSFace* getTrackedFace(int index) const
+		{ return mFaceTracker.getFace(index); } // returns nullptr if no face at index
+	const vector<ofxRSFace::Landmark>* getTrackedFaceLandmarks(int index) const 
+		{ return mFaceTracker.getLandmarksByFace(index); } // null if no face
+
 
 	// scanning (face only for now)
 	bool startScan() { return mScanner.start(); }
