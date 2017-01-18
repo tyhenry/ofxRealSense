@@ -67,36 +67,28 @@ class ofxRSFaceTracker {
 
 public:
 
-	ofxRSFaceTracker() {}
-	~ofxRSFaceTracker() {}
+	ofxRSFaceTracker(){}
+	~ofxRSFaceTracker() { disable(); }
 
 	bool enable(PXCSenseManager* senseManagerPtr, bool useDepth = true);
 	bool update();
-	bool disable(); // ?
+	void disable();
 
 	int getNumFaces() { return faces.size(); }
 
 	// get single face
-	const vector<ofxRSFace::Landmark>& getLandmarksByFace()
-
-	vector<ofVec3f> getFaceLandmarksWorld(int face);
-	vector<ofVec2f> getFaceLandmarksColor(int face);
-	vector<ofVec3f> getFaceLandmarksWorldByGroup(int face, PXCFaceData::LandmarksGroupType);
-	vector<ofVec2f> getFaceLandmarksColorByGroup(int face, PXCFaceData::LandmarksGroupType);
+	const ofxRSFace* getFace(int index) const;
+	const vector<ofxRSFace::Landmark>* getLandmarksByFace(int index) const;
 
 	// get all faces
-	const vector<ofxRSFace>& getFaces() { return faces; }
+	const vector<ofxRSFace>& getFaces() const { return faces; }
 
 private:
 
 	bool bActive = false;
 	PXCSenseManager* senseMgr;
-
 	PXCFaceModule* faceTracker;
 	PXCFaceData* faceData;
 
 	vector<ofxRSFace> faces;
-
-	vector<map<PXCFaceData::LandmarksGroupType, vector<PXCFaceData::LandmarkPoint>>> facesGroups; 
-	// ^ this is pretty complex, but basically stores each face as a map of <landmark group, points>
 };
