@@ -27,6 +27,7 @@ bool ofxRSFace::loadFrom(PXCFaceData::Face* face)
 			for (int p = 0; p < nPts; p++)
 				landmarks.push_back(Landmark(points[p], (LandmarkGroup)group));
 		}
+		delete[] points;
 	}
 	return true;
 }
