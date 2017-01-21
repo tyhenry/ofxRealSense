@@ -4,6 +4,8 @@
 /* ofxRSFace */
 /*-----------*/
 
+// create a face from a realsense face
+//-------------------------------------
 bool ofxRSFace::loadFrom(PXCFaceData::Face* face)
 {
 	if (!face) return false;
@@ -32,6 +34,7 @@ bool ofxRSFace::loadFrom(PXCFaceData::Face* face)
 	return true;
 }
 
+//-------------------------------
 vector<ofxRSFace::Landmark> ofxRSFace::getLandmarksByGroup(LandmarkGroup group)
 {
 	vector<Landmark> lms;
@@ -47,6 +50,9 @@ vector<ofxRSFace::Landmark> ofxRSFace::getLandmarksByGroup(LandmarkGroup group)
 /* ofxRSFaceTracker */
 /*------------------*/
 
+
+// enable
+//-------------------------------
 bool ofxRSFaceTracker::enable(PXCSenseManager* senseManagerPtr, bool useDepth) {
 
 	bActive = false;
@@ -107,6 +113,8 @@ bool ofxRSFaceTracker::enable(PXCSenseManager* senseManagerPtr, bool useDepth) {
 	return true;
 }
 
+// update
+//-------------------------------
 bool ofxRSFaceTracker::update() {
 
 	if (!bActive || !senseMgr || !faceTracker || !faceData)
@@ -143,6 +151,8 @@ bool ofxRSFaceTracker::update() {
 	return true;
 }
 
+// disable
+//-------------------------------
 void ofxRSFaceTracker::disable() {
 
 	if (faceData)
@@ -154,6 +164,9 @@ void ofxRSFaceTracker::disable() {
 	bActive = false;
 }
 
+
+// getters
+//-------------------------------
 const ofxRSFace * ofxRSFaceTracker::getFace(int index) const
 {
 	if (index >= 0 && index < faces.size())
@@ -161,6 +174,7 @@ const ofxRSFace * ofxRSFaceTracker::getFace(int index) const
 	return nullptr;
 }
 
+//-------------------------------
 const vector<ofxRSFace::Landmark> * ofxRSFaceTracker::getLandmarksByFace(int index) const
 {
 	if (index >= 0 && index < faces.size()) 

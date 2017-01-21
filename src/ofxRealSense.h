@@ -56,6 +56,7 @@ public:
 	// scanning (face only for now)
 	bool startScan() { return mScanner.start(); }
 	bool stopScan() { return mScanner.stop(); }
+	ofxRSScan& getScanner() { return mScanner; }
 	bool saveScan(string filename) { return mScanner.save(ofToDataPath(filename, true)); }
 	bool isFaceScanReady() { return mScanner.isFaceScanReady(); }
 	bool isScanning() { return mScanner.isScanning(); }

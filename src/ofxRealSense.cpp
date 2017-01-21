@@ -334,11 +334,17 @@ void ofxRealSense::drawScanPreview(float x, float y, float w, float h)
 //--------------------------------------------------------------
 bool ofxRealSense::close()
 {
+
+	bIsOpen = false;
+	mScanner.close();
+
 	if (mSenseMgr != NULL)
 	{
+
 		mSenseMgr->Close();
 		mSenseMgr->Release(); // ? needed
 		mSenseMgr = NULL;
+	
 		return true;
 	}
 	return false;

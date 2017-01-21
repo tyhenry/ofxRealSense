@@ -90,15 +90,18 @@ bool ofxRSScan::configure( /* to do: options */ )
 bool ofxRSScan::start() {
 
 	// error: module not yet ready or already scanning
+	
 	if (scanMode != RSSCAN_READY)
 	{
 		string msg = (scanMode < RSSCAN_READY) ? "module not yet ready" : "already scanning";
 		ofLogError("ofxRSScan") << "can't start 3D scanning, " + msg;
 		return false;
 	}
+	
 
 	// start scan
 	PXC3DScan::Configuration config = scanner->QueryConfiguration();
+	cout << "starting scan, scan config was [startScan? " << config.startScan << "]" << endl;
 	config.startScan = true;
 	pxcStatus status = scanner->SetConfiguration(config);
 
@@ -175,11 +178,12 @@ bool ofxRSScan::stop()
 {
 	if (scanMode != RSSCAN_STARTED)
 	{
-		ofLogError("ofxRSScan") << "can't stop scan, scan not started";
+		ofLogError("ofxRSScan") << "can't stop scan, scan not started, scan mode: " << scanMode;
 		return false;
 	}
 
 	PXC3DScan::Configuration config = scanner->QueryConfiguration();
+	cout << "stopping scan, scan config currently: [startScan ? " << config.startScan << "]" << endl;
 	config.startScan = false;
 	pxcStatus status = scanner->SetConfiguration(config);
 
