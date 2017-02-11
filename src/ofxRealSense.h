@@ -23,7 +23,7 @@ friend class ofxRSScan;
 
 public:
 
-	ofxRealSense();
+	ofxRealSense() :mSenseMgr(nullptr) {}
 	~ofxRealSense() {}
 
 	// initialize camera and modules (face tracking and face scanning)

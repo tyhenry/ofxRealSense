@@ -1,10 +1,5 @@
 #include "ofxRealSense.h"
 
-ofxRealSense::ofxRealSense() 
-{
-
-}
-
 //--------------------------------------------------------------
 bool ofxRealSense::setup(bool grabColor, bool useTextures, bool mirror, bool trackFaces, bool doScan)
 {
