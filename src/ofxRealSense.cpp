@@ -126,7 +126,7 @@ bool ofxRealSense::update()
 
 	// get new frame
 	/* TO DO: threading a la ofxKinect */
-	status = mSenseMgr->AcquireFrame(true,30); // this is blocking for 10ms, returns error if not all frames ready (e.g. depth + color + scan)
+	status = mSenseMgr->AcquireFrame(true,20); // this is blocking for 20ms, returns error if not all frames ready (e.g. depth + color + scan)
 	if (status < PXC_STATUS_NO_ERROR)
 	{
 		ofLogWarning("ofxRealSense") << "unable to acquire new frame, error status: " << status;
