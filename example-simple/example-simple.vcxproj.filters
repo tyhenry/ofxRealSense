@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<ClCompile Include="src\ofApp.cpp">
+			<Filter>src</Filter>
+		</ClCompile>
+		<ClCompile Include="src\main.cpp">
+			<Filter>src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\addons\ofxRealSense\src\ofxRealSense.cpp">
+			<Filter>addons\ofxRealSense\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\addons\ofxRealSense\src\ofxRSFaceTracker.cpp">
+			<Filter>addons\ofxRealSense\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\addons\ofxRealSense\src\ofxRSScan.cpp">
+			<Filter>addons\ofxRealSense\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\addons\ofxRealSense\src\ofxRSScanAlertHandler.cpp">
+			<Filter>addons\ofxRealSense\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\addons\ofxRealSense\src\ofxRSUtils.cpp">
+			<Filter>addons\ofxRealSense\src</Filter>
+		</ClCompile>
+	</ItemGroup>
+	<ItemGroup>
+		<Filter Include="src">
+			<UniqueIdentifier>{d8376475-7454-4a24-b08a-aac121d3ad6f}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons">
+			<UniqueIdentifier>{71834F65-F3A9-211E-73B8-DC85}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxRealSense">
+			<UniqueIdentifier>{0A71C47A-3538-E1FB-6856-3C70}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxRealSense\src">
+			<UniqueIdentifier>{D4110855-99FB-CFEB-6B28-21C9}</UniqueIdentifier>
+		</Filter>
+	</ItemGroup>
+	<ItemGroup>
+		<ClInclude Include="src\ofApp.h">
+			<Filter>src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\addons\ofxRealSense\src\ofxRealSense.h">
+			<Filter>addons\ofxRealSense\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\addons\ofxRealSense\src\ofxRSFaceTracker.h">
+			<Filter>addons\ofxRealSense\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\addons\ofxRealSense\src\ofxRSScan.h">
+			<Filter>addons\ofxRealSense\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\addons\ofxRealSense\src\ofxRSScanAlertHandler.h">
+			<Filter>addons\ofxRealSense\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\addons\ofxRealSense\src\ofxRSUtils.h">
+			<Filter>addons\ofxRealSense\src</Filter>
+		</ClInclude>
+	</ItemGroup>
+	<ItemGroup>
+		<ResourceCompile Include="icon.rc" />
+	</ItemGroup>
+</Project>
